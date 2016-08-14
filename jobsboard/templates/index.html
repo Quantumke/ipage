@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="http://cdn.i254.co.ke/css/menu_elastic.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="http://cdn.i254.co.ke/css/overlay.css">
+    <link rel="stylesheet" type="text/css" href="http://cdn.i254.co.ke/css/parsley.css">
     <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
     <script src="http://cdn.i254.co.ke/js/jquery.js"></script>
     <script src="http://cdn.i254.co.ke/js/index.js"></script>
@@ -13,6 +14,8 @@
     <script src="http://cdn.i254.co.ke/js/animate.js"></script>
     <script src="http://cdn.i254.co.ke/js/mo.min.js"></script>
     <script src="http://cdn.i254.co.ke/js/honeycombs.js"></script>
+    <script src="http://cdn.i254.co.ke/js/presley.js"></script>
+
 
 
 </head>
@@ -546,19 +549,20 @@
                     </span>
                 </p>
 
-                <div class="formlarge col s12 m12 l12">
-                    <form action="" name="">
+                <div class="formlarge col s12 m12 l12" id="feedback-form" data-parsley-validate="">
+                    <form action="/contact/" name="" method="POST" enctype="multipart/form-data" data-parsley-validate>
+                        {% csrf_token %}
             <div class="input-text-small col s12 m12 l4">
-                <input type="text" class="text-small col s12 m12 l11" placeholder="Name" name="name" id="name" autocomplete="off" >
+                <input type="text" class="text-small col s12 m12 l11" placeholder="Name" name="name" id="name" required="" autocomplete="off" >
                 </div>
                     <div class="input-text-small col s12 m12 l4">
-                <input type="text" class="text-small col s12 m12 l11" placeholder="Email" name="email" autocomplete="off" >
+                <input type="email" class="text-small col s12 m12 l11" placeholder="Email" name="email" autocomplete="off" data-parsley-trigger="change" required="">
                 </div>
                      <div class="input-text-small col s12 m12 l4">
-                <input type="text" class="text-small col s12 m11 l11" placeholder="Phone" name="phone" autocomplete="off" >
+                <input type="text" class="text-small col s12 m11 l11" placeholder="Phone" name="phone" autocomplete="off" required="" data-parsley-type="number" data-parsley-trigger="change" data-parsley-minlength="10" data-parsley-maxlength="14">
                 </div>
                     <div class="input-textarea-large col s12 m12 l12">
-                    <textarea class="text-large col s12 m12 l12">Message</textarea>
+                    <textarea class="text-large col s12 m12 l12" name="message" placeholder="Message" data-parsley-trigger="keyup" data-parsley-minlength="20" data-parsley-maxlength="100" data-parsley-minlength-message="You need to enter at least a 20 character comment.." data-parsley-validation-threshold="10"></textarea>
                     </div>
                     <div class="submit-button-area col s5 m5 l5">
                     <input type="submit" name="submit" class="submit-feedback-button">
@@ -615,14 +619,15 @@
 			<div id="myOverlay2" aria-labelledby="myOverlay2Heading" data-overlay-container-class="slide-down" role="region">
 				<div class="popup-header col s12 m12 l12">
                 <span class="col s12 m12 l12">FILL IN THE FORM TO COMPLETE YOUR ORDER</span><br>
-                    <form action="" method="post" enctype="multipart/form-data">
+                    <form action="/prospctets/" method="post" enctype="multipart/form-data" id="prospects-form" data-parsley-validate="">
+                        {% csrf_token %}
                     <input type="hidden" id="package" class="col s12 m12 l12" name="package"><br>
-                    <input type="text" name="name" placeholder="Your Name" class="input-popup col s12 m12 l12"><br>
-                    <input type="text" name="" placeholder="Your Email" class="input-popup col s12 m12 l12"><br>
-                    <input type="text" name="" placeholder="Phone number" class="input-popup col s12 m12 l12"><br>
+                    <input type="text" name="name" placeholder="Your Name" class="input-popup col s12 m12 l12" required=""><br>
+                    <input type="email" name="email" placeholder="Your Email" class="input-popup col s12 m12 l12" data-parsley-trigger="change" required=""><br>
+                    <input type="text" name="phone" placeholder="Phone number" class="input-popup col s12 m12 l12" required="" data-parsley-type="number" data-parsley-trigger="change" data-parsley-minlength="10" data-parsley-maxlength="14"><br>
 
-                        <textarea class="popup-textarea">
-                        Tell us a little more about your project
+                        <textarea name="description" class="popup-textarea" placeholder="Tell us a little more about your project"data-parsley-trigger="keyup" data-parsley-minlength="20" data-parsley-maxlength="100" data-parsley-minlength-message="Please enter a more indepth description.." data-parsley-validation-threshold="10">
+
                         </textarea>
                         <br>
                         <input type="submit" name="submit" class="submit-popup">
@@ -644,6 +649,7 @@ if(el){
 }
 function addtoform() {
     document.getElementById("package").value = "package3"
+    console.log("package3")
 }
 
 var packageone = document.getElementById('item-one');
@@ -652,6 +658,7 @@ if(packageone){
 }
 function addpackageone() {
     document.getElementById("package").value = "package1"
+    console.log("package one")
 }
 var packagetwo = document.getElementById('item-two');
 if(packagetwo){
@@ -659,6 +666,7 @@ if(packagetwo){
 }
 function addpackagetwo() {
     document.getElementById("package").value = "package2"
+    console.log("package 2")
 }
 
 function dome(){
@@ -667,6 +675,17 @@ function dome(){
 function goabout(){
     	window.location="#feedbacklink";
 }
+
+            $(function () {
+  $('#feedback-form').parsley().on('field:validated', function() {
+    var ok = $('.parsley-error').length === 0;
+    $('.bs-callout-info').toggleClass('hidden', !ok);
+    $('.bs-callout-warning').toggleClass('hidden', ok);
+  })
+  .on('form:submit', function() {
+    return true;
+  });
+});
         </script>
         <script src="http://cdn.i254.co.ke/js/Overlay.js"></script>
         <script src="http://cdn.i254.co.ke/js/classie.js"></script>
